@@ -142,7 +142,8 @@ const Subs: React.FC = () => {
   const t = f / FPS;
   const it = at(t);
   if (it && it.kind === "clip" && (it.role === "lang" || it.role === "flash" || (it.role === "scene" && !it.chars))) {
-    const p = sp(f, it.start + 0.1, 14, 200);
+    // Language clips may begin speaking immediately; keep their complete subtitle readable from the cut.
+    const p = it.role === "lang" ? 1 : sp(f, it.start + 0.1, 14, 200);
     return (
       <div style={{ position: "absolute", left: 0, width: 1920, bottom: 46, display: "flex", justifyContent: "center", ...appear(p, 16) }}>
         <div dir="auto" style={{ textAlign: "center", background: "rgba(28,27,24,.82)", padding: "12px 34px", borderRadius: 16, maxWidth: 1500 }}>
