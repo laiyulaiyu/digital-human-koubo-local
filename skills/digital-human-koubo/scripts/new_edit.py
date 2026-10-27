@@ -15,8 +15,14 @@ def main():
     parser.add_argument('--skip-install', action='store_true')
     args = parser.parse_args()
     root = Path(__file__).resolve().parent.parent
-    source = (root / 'templates' / args.template).resolve()
-    if not source.is_relative_to(root / 'templates') or not (source / 'package.json').is_file():
+    if args.template == 'finance-explainer':
+        # Style A uses the sibling engine shipped in the original repository.
+        source = (root.parent / 'finance-explainer' / 'templates' / 'engine').resolve()
+        allowed_root = (root.parent / 'finance-explainer' / 'templates').resolve()
+    else:
+        source = (root / 'templates' / args.template).resolve()
+        allowed_root = (root / 'templates').resolve()
+    if not source.is_relative_to(allowed_root) or not (source / 'package.json').is_file():
         parser.error('Unknown original template: ' + args.template)
     destination = Path(args.destination).resolve()
     if (destination / 'src').exists():
@@ -35,7 +41,12 @@ def main():
         subprocess.run([npm, 'ci' if (destination / 'package-lock.json').exists() else 'install'], cwd=destination, check=True)
     subprocess.run([sys.executable, '-X', 'utf8', str(root / 'scripts/make_assets.py'), str(destination / 'public')], check=True)
     print('Original template ready:', destination)
-    print('Place main.mp4 / voice.wav in public/, align to src/tl.json, edit src/edit.json, then run check_edit.py.')
+    if args.template == 'finance-explainer':
+        print('Use finance-explainer/scripts/build_timeline.py to prepare public/timeline.json and place local host/voice assets in public/.')
+    elif args.template.startswith('reference/'):
+        print('Adapt the original example scenes, timeline and public/ assets to the current episode; see templates/reference/README.md.')
+    else:
+        print('Place main.mp4 / voice.wav in public/, align to src/tl.json, edit src/edit.json, then run check_edit.py.')
 
 
 if __name__ == '__main__':

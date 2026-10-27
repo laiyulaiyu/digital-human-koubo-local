@@ -96,6 +96,8 @@ on 必须在台词中出现且按顺序排列。默认提示词将手势绑定�
 
 LoRA放在配置的comfy_root/models/loras内，name支持子目录，不接受越界路径。原生LoraLoaderModelOnly串接到已有H3模型，同时更新guider和scheduler。清单记录文件SHA256及权重，执行时复核；改变文件或权重会改变任务身份。续跑使用local_backend.py run清单，保留审核记录。
 
+可选的真人写实示例为仓库 `examples/gesture/script-realism.json`：保留动作 LoRA 0.5，增加 H3 写实 LoRA 0.7，并在实际视频提示词中包含作者指定触发词 `r34l1sm`。模型版本、校验码与许可见 `docs/MODELS.md`。可将整个 `examples/gesture` 复制到一个**新的**工作目录，将该文件作为 `build_tasks.py` 的输入，再按正常本地流程运行；不要覆盖此前样片。模型加载成功只证明流程接通，画面、动作、字幕和实际语音仍需人工审看。原版 B/C/D/E 剪辑风格与 LoRA 是不同层次的选择，按内容分别设置。
+
 已选人体动作模型的作者说明：https://huggingface.co/vpakarinen/better-human-motion-h3-lora ，建议0.4–0.8、20–30步；本轮首测0.5/20步。没有验证它与Turbo叠加的质量，不默认把动作LoRA叠到加速流程上。其他基础模型的LoRA不能直接通用。
 
 ## 原云端兼容（显式选择）

@@ -15,12 +15,12 @@ const useLocal = (o: Overlay) => {
 
 const posStyle = (pos: string | undefined): React.CSSProperties => {
   switch (pos) {
-    case "left": return { left: 90, top: 300, alignItems: "flex-start" };
-    case "topleft": return { left: 70, top: 70, alignItems: "flex-start" };
-    case "right": return { right: 90, top: 300, alignItems: "flex-end" };
+    case "left": return { left: 0, right: 0, top: 300, paddingLeft: 90, boxSizing: "border-box", alignItems: "flex-start" };
+    case "topleft": return { left: 0, right: 0, top: 70, paddingLeft: 70, boxSizing: "border-box", alignItems: "flex-start" };
+    case "right": return { left: 0, right: 0, top: 300, paddingRight: 90, boxSizing: "border-box", alignItems: "flex-end" };
     case "lower": return { left: 0, right: 0, top: 640, alignItems: "center" };
     case "center": return { left: 0, right: 0, top: 380, alignItems: "center" };
-    default: return { right: 90, top: 300, alignItems: "flex-end" };
+    default: return { left: 0, right: 0, top: 300, paddingRight: 90, boxSizing: "border-box", alignItems: "flex-end" };
   }
 };
 

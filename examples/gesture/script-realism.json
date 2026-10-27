@@ -1,0 +1,43 @@
+[
+  {
+    "id": "g1",
+    "t": "先看来源，再看证据。想清楚，再下结论。",
+    "seconds": 6,
+    "first": "assets/presenter-medium.png",
+    "width": 448,
+    "height": 800,
+    "seed": 27511,
+    "turbo": false,
+    "keep_full": true,
+    "loras": [
+      {
+        "name": "better_motion_h3_lora_v1_500.safetensors",
+        "strength": 0.5
+      },
+      {
+        "name": "h3-realism-people-t2v-i2v-r2v.safetensors",
+        "strength": 0.7,
+        "sha256": "acc529601d2da117fb81179e76c56e488a3beab1171659d305f04fa3655b787e"
+      }
+    ],
+    "gestures": [
+      {
+        "on": "先看来源",
+        "action": "lifts her right forearm and opens her right palm upward at waist level, with a small shoulder weight shift"
+      },
+      {
+        "on": "再看证据",
+        "action": "opens her left palm in a contrasting explanatory gesture while relaxing the right hand"
+      },
+      {
+        "on": "想清楚",
+        "action": "briefly pauses her hands and gives one small thoughtful nod"
+      },
+      {
+        "on": "再下结论",
+        "action": "makes one gentle downward beat with her right open palm on the stressed final words, then rests both hands naturally near the waist"
+      }
+    ],
+    "prompt": "For the target video, at 0.00 seconds into the target video, <Picture 1> (from [Shot 1]) is fully referenced.\n\nintegrated_multimodal_description: [Shot 1] r34l1sm, live-action studio talking head. Preserve the exact person, face, hairstyle, clothing, lighting and framing in the first frame. The camera holds a static shot. The sole adult presenter (S1), with a warm, steady adult female voice, medium-low pitch, clear standard Mandarin, conversational delivery, looks directly into the lens and speaks with natural lip movement, relaxed upper-body weight shifts and restrained conversational hand gestures, explaining in a natural human motion demonstration, mvmt. Frame her from head to mid-thigh, keeping both forearms and complete hands visible. Her shoulder and torso movements follow speech emphasis with small amplitude. Hands return towards a relaxed waist-level position during pauses; no continuous metronomic rocking. As she says the words 先看来源, she lifts her right forearm and opens her right palm upward at waist level, with a small shoulder weight shift. As she says the words 再看证据, she opens her left palm in a contrasting explanatory gesture while relaxing the right hand. As she says the words 想清楚, she briefly pauses her hands and gives one small thoughtful nod. As she says the words 再下结论, she makes one gentle downward beat with her right open palm on the stressed final words, then rests both hands naturally near the waist. After a brief opening breath she says exactly once: <d>[Mandarin Chinese] 先看来源，再看证据。想清楚，再下结论。</d> She finishes the complete sentence before 6.18 seconds, then gently closes her mouth. Keep the shot continuous. Keep the image clean, without captions, text, logos or watermarks.\n\noverall_soundscape: Quiet indoor room tone beneath clean close-microphone speech. No additional speaker or echoing speech.\n\nnon_diegetic_music: N/A"
+  }
+]

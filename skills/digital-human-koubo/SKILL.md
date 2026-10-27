@@ -47,7 +47,7 @@ description: 数字人口播视频：默认使用本机 ComfyUI MiniMax H3 和�
 | E 多主播多语言 | 16:9 | 3–7 分钟 | 参考实现 `templates/reference/multihost-169` |
 
 ### 1. 写稿 → script.json
-本地 H3：每段显式写 seconds（4–15 秒）、first 本地图、seed、width/height；示例和校验见 local-comfyui.md。不要用 Grok 的 5.4 字/秒推导 H3 台词容量。下段的 Grok 经验仅供云端分支。
+本地 H3：每段显式写 seconds（4–15 秒）、first 本地图、seed、width/height；示例和校验见 local-comfyui.md。外语段同时写 `lang`（生成提示词中的语言，例如 `English`）和 `lang_code`（ASR 语言代码，例如 `en`），不要依赖默认中文转写。不要用 Grok 的 5.4 字/秒推导 H3 台词容量。下段的 Grok 经验仅供云端分支。
 按选定风格的稿子写法（style-menu.md 里每种都有）。每段一句或两句，10 秒左右（约 40–55 字，Grok 中文约 5.4 字/秒），标 `shot`：`full`（全屏出镜）/ `pip`（画中画讲解）/ `vlog`（随意自拍口吻）/ `depth`（要做「文字在人身后」的段：中景、头顶两侧留背景）。英文缩写、网址写成好念的样子。外语段直接写目标语言的台词。
 
 ### 2. 切段 + 报价
@@ -74,10 +74,10 @@ download_results 拿链接 → 整理成 `urls.txt`（每行 `<taskId>.<ext> <ur
 本地 Windows 用 `python -X utf8 scripts/new_edit.py huazi-916 <工程>`，其余仍用原 align.py / check_edit.py / voicefx 和模板。`new_edit.sh` 保留给原平台。不要用估计的字时长代替实测 ASR 对齐。
 `python3 scripts/align.py script.json --out <工程>/src/tl.json` 出逐字时间轴，然后按 brief.json 的风格剪：
 - **B 花字口播**：`bash scripts/new_edit.sh huazi-916 <工程>` → 写 `src/edit.json`（关键词、表情、卡片、作品展示、号召，字段见 references/huazi.md）→ `python3 scripts/check_edit.py <工程>/src` → 抽帧 → 渲染。
-- **A 小林式**：`bash ~/.claude/skills/finance-explainer/scripts/setup_engine.sh <工程>`，按那边的拍表和画面语法做；数字人口播片段放进 host.json。
-- **C / D / E**：`bash scripts/new_edit.sh reference/<目录> <工程>`，换 tl.json，按段重写 Scene（templates/reference/README.md）。
+- **A 小林式**：在仓库内使用 `python -X utf8 scripts/new_edit.py finance-explainer <工程>` 创建相邻 `finance-explainer/templates/engine` 的原引擎；按该 Skill 的拍表语法，用其 `scripts/build_timeline.py` 和本地口播素材生成 `public/timeline.json`，主播片段写入 `host.json`。其他平台可用原 `setup_engine.sh`。
+- **C / D / E**：本地可用 `python -X utf8 scripts/new_edit.py reference/<目录> <工程>`；补齐素材、按新节目修改时间轴和 Scene（`templates/reference/README.md`）。这些是具体节目的参考工程，不是通用填空模板。
 - **包装（每种风格都做）**：按 `references/packaging-presets.json` 里这个风格的默认包装排——开场 30 秒按 open 顺序、正文保证 stimulus_every_s 秒内有一个新视觉事件、讲到 per_beat 里那类内容就用对应组件、recurring 全片挂着。组件写进 `pack` 数组（字段见 references/packaging.md），手法依据见 references/packaging-playbook.md。用户点名要的手法（「加地图」「开场加预告」「加弹幕」「换成 MrBeast 那种」）在默认基础上加减。用户问「有哪些包装」先发 `assets/packaging/图鉴.jpg`。景深字（文字在人身后）要先跑 `scripts/cutout_video.py` 抠像，见 references/packaging.md。
-- 声音：数字人视频轨一定 `muted`，人声单独铺一条；多段 Grok 原声用 `python3 scripts/voicefx/unify.py <输出目录> <片段…>` 统一频谱 + 同一个小房间混响（复用旧段时加 `--ref 旧片段目录`，场景/动物片段加 `--scene`）。BGM 压在人声下约 20 dB。
+- 声音：B、D、E 通常将数字人视频静音并单独铺人声。C 参考工程原本使用主播视频音轨，开场主播未出镜时另播放首段开场音频；若改成独立人声轨，需同时静音或移除这两处视频原声，避免双重播放。多段原声可用 `python3 scripts/voicefx/unify.py <输出目录> <片段…>` 统一频谱与混响（复用旧段时加 `--ref 旧片段目录`，场景/动物片段加 `--scene`）。BGM 压在人声下约 20 dB。
 - 抽帧检查一定看过渡的中间帧和零间隔衔接处（上一条的尾巴会盖住下一条）。
 
 ## 参考
