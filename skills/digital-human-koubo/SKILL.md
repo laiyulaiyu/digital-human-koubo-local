@@ -1,14 +1,19 @@
 ---
 name: digital-human-koubo
-description: 用固定的数字人形象（白背心数字人 / 用户本人数字人 / 猫狗角色）做口播视频，先按内容推荐剪辑风格让用户选（小林式解说 / 网红花字口播 / 发布解读 / 保姆级教程 / 多主播多语言），自动套上从 MrBeast、MKBHD、影视飓风、Johnny Harris、Vox、半佛、差评等头部博主拆出来的 48 个包装组件（开场钩子、数字钉子、文字在人身后的景深字、证据截图、地图路线、弹幕、投票、复盘板…），再写稿 → 按 15 秒切段 → Renoise Grok Video 1.5 分段生成（先报价、用户确认才生成）→ 分片下载校验 → 逐段回听 → 对齐 → Remotion 剪辑出片。触发：用我的数字人讲这段、数字人口播、让白背心数字人说、用数字人 Skill、数字人带货 / 解读 / 教程 / 种草视频、做成小林说那样、加花字、加包装 / 加地图 / 加弹幕 / 开场加预告 / 文字放在人身后、做成 MrBeast 那种节奏、有哪些包装手法。不用于：换一个全新形象（先按 references/new-avatar.md 做形象）、冒充真人。
+description: 数字人口播视频：默认使用本机 ComfyUI MiniMax H3 和本地参考图生成带原声的分段视频，复用原仓库的语音核对、逐字对齐、声音统一与 Remotion 模板和包装组件。也保留显式选择的 Renoise 云端生成。适用于科技解读、教程、评论、花字、卡片、地图、弹幕等数字人口播制作；本地配置与运行方法见 references/local-comfyui.md。
 ---
 
 # 数字人口播
 
-形象、声音、提示词、切段规则固定在 `persona.json`；剪辑风格在 `references/style-menu.md`。每次照这里做，出来的就是同一个人、同一种风格。
+这是上游 digital-human-koubo 的本地化改造。默认走 `references/local-comfyui.md`：本地参考图 → ComfyUI H3 原声口播 → 原仓库 assemble / align / voicefx → 原 Remotion 模板与包装组件。不要另造一套剪辑引擎。
+
+本地生成参数写入 script.json，路径和运行环境写入 config/local.json（从 local.example.json 复制，或用 --config 指定）。原 persona.json 中的云端素材 ID、Grok 语速和计费参数仅用于显式 --backend renoise。剪辑风格继续按 `references/style-menu.md`。用户已确认的风格和实施范围直接沿用。
+
+口播肢体动作与LoRA：按 local-comfyui.md 的对应章节配置 gestures / loras；使用双手可见的中景，把动作绑定到台词短语和停顿，再按实际ASR时间检查。手势来自生成视频本身，继续复用原剪辑模板。
 
 ## 红线
-- 生成花用户的 Renoise credits：create_tasks 之前先报「段数 · 秒数 · 预估 credits · 余额」，等用户在对话里明确同意。先拍第 1 段给用户确认音色，再批量。重拍也要先报价。
+- 本地流程不调用 Renoise，不查询余额，不上传参考图；先做一段检查语音与口型，保留原声和任务记录。新增LoRA先核实H3兼容性与来源，记录文件哈希和强度，用真实短片验证。
+- 仅显式选择 Renoise 云端时：create_tasks 之前先报「段数 · 秒数 · 预估 credits · 余额」，等用户在对话里明确同意。重拍也要先报价。
 - 成片标「内容由 AI 数字人演绎」；场景、动物片段角上标「AI 生成」。
 - 用户本人的形象（persona.json → other_hosts.me）只用在用户自己的片子里。
 - 「小林式」只学结构和剪辑手法：不用真实创作者的脸、声音、布景和原句。
@@ -17,6 +22,7 @@ description: 用固定的数字人形象（白背心数字人 / 用户本人数�
 ## 流程
 
 ### 准备：先检查，有就跳过，缺才引导安装（每次新对话第一次用时做）
+**默认本地分支**：先读 `references/local-comfyui.md`，检查配置中的已有 Python、ffmpeg、Node、ComfyUI 模型及本地 ASR 缓存，不重复安装。Windows 用 `python -X utf8 scripts/new_edit.py` 复用模板。显存任务串行，勿中断其他项目的服务或队列。下面 Renoise 的安装、余额和素材 ID 检查仅用于用户显式选择云端的情况。
 **原则：已经装好的一句话带过，不让用户重装；缺什么才给装法，装法给多种，先放用户当前用的那种。** 详细装法在 references/install.md。
 1. **Renoise MCP**：直接调 `get_account`。
    - 成功 → 只说一句「Renoise 已连接，余额 X 积分」，接着干活。
@@ -41,25 +47,31 @@ description: 用固定的数字人形象（白背心数字人 / 用户本人数�
 | E 多主播多语言 | 16:9 | 3–7 分钟 | 参考实现 `templates/reference/multihost-169` |
 
 ### 1. 写稿 → script.json
+本地 H3：每段显式写 seconds（4–15 秒）、first 本地图、seed、width/height；示例和校验见 local-comfyui.md。不要用 Grok 的 5.4 字/秒推导 H3 台词容量。下段的 Grok 经验仅供云端分支。
 按选定风格的稿子写法（style-menu.md 里每种都有）。每段一句或两句，10 秒左右（约 40–55 字，Grok 中文约 5.4 字/秒），标 `shot`：`full`（全屏出镜）/ `pip`（画中画讲解）/ `vlog`（随意自拍口吻）/ `depth`（要做「文字在人身后」的段：中景、头顶两侧留背景）。英文缩写、网址写成好念的样子。外语段直接写目标语言的台词。
 
 ### 2. 切段 + 报价
+本地：`python -X utf8 scripts/build_tasks.py script.json tasks.json --config <本地配置>`。默认生成本地清单，打印段数和实际帧数对应时长，无 Renoise 积分。以下计价说明只用于加 `--backend renoise` 的云端清单。
 `python3 scripts/build_tasks.py script.json tasks.json --purpose "teaching a beginner tutorial step by step"`
 → 打印段数、秒数、预估 credits。full 段 720p（17/秒），pip 段 480p（10/秒）。拿 `estimate_cost` 核一次，报给用户等确认。用户本人或动物主播用 persona.json → other_hosts 里的提示词模板。
 
 ### 3. 生成
+本地：`python -X utf8 scripts/local_backend.py run tasks.json --only s1`。检查首段后运行剩余段。重新执行同一命令续查已有任务，不重复提交；改变 seed 才是新拍摄。保留 ids.json 和 runtime/jobs。参考图由本机 Qwen 工作流提供。以下 create_tasks 仅属云端分支。
 tasks.json 每 10 个一批 create_tasks → wait_tasks。要进场景（直播间、门店、街景）时先用 GPT Image 2.5 合成开场画面（人物参考图 + 场景描述，2k 约 23 积分），再把这张图当 Grok 的参考图。
 
 ### 4. 下载（Renoise 美国 CDN 很慢，必须这样下）
+本地不下载 CDN：执行器已校验并保存原声 mp4；ids.json 的本地条目含 path、job_id、state。只有 succeeded 可进入拼接。下面下载器保留给云端。
 download_results 拿链接 → 整理成 `urls.txt`（每行 `<taskId>.<ext> <url>`）→ `python3 scripts/rangedl.py`：每个文件 6 段 Range 并发、断点续传、下完 ffmpeg 解码校验。
 
 ### 5. 回听 + 抽帧 + 拼接
+本地同样运行下方原 assemble.py，自动选用已缓存的本地 ASR（CPU）并转换成原对齐格式；`DH_ASR_MODEL` 可指定路径。不向 ASR 输入预期台词。低于 85% 的段暂停拼接，先核对真实音频，不把 ASR 相似度当作口型或听感通过。输出 cut/qa.json。
 `python3 scripts/assemble.py script.json ids.json --out 成片_完整版.mp4`（ids.json = {段 id: taskId}）：whisper 逐段转写比对文稿、只保留到说完后 0.25 秒、拼接、loudnorm -16。
 - whisper `--prompt 原文` 会让个别段漏掉前半句，用中性提示「以下是普通话的句子。」。外语段按语言转写；日韩阿拉伯语不要加 `-ml 1`（会把多字节字符截断成乱码）。
 - **每段抽 4 帧看一眼**：Grok 横屏口播偶尔自己烧字幕（提示词写了也挡不住），有就重拍那段。
 - Grok 有时漏念开头的语气词：没影响意思就按实际口播改字幕，别为这个重拍。
 
 ### 6. 对齐 + 剪辑
+本地 Windows 用 `python -X utf8 scripts/new_edit.py huazi-916 <工程>`，其余仍用原 align.py / check_edit.py / voicefx 和模板。`new_edit.sh` 保留给原平台。不要用估计的字时长代替实测 ASR 对齐。
 `python3 scripts/align.py script.json --out <工程>/src/tl.json` 出逐字时间轴，然后按 brief.json 的风格剪：
 - **B 花字口播**：`bash scripts/new_edit.sh huazi-916 <工程>` → 写 `src/edit.json`（关键词、表情、卡片、作品展示、号召，字段见 references/huazi.md）→ `python3 scripts/check_edit.py <工程>/src` → 抽帧 → 渲染。
 - **A 小林式**：`bash ~/.claude/skills/finance-explainer/scripts/setup_engine.sh <工程>`，按那边的拍表和画面语法做；数字人口播片段放进 host.json。

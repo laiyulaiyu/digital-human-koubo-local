@@ -6,14 +6,14 @@ import json, difflib, sys
 from pathlib import Path
 a = sys.argv[1:]
 if not a: sys.exit(__doc__)
-S = json.load(open(a[0])); Q = {r['id']: r for r in json.load(open('cut/qa.json'))}
+S = json.loads(Path(a[0]).read_text(encoding='utf-8-sig')); Q = {r['id']: r for r in json.loads(Path('cut/qa.json').read_text(encoding='utf-8-sig'))}
 out = a[a.index('--out') + 1] if '--out' in a else 'edit/src/tl.json'
 PUNCT = set('，。、：；！？,.:;!? “”「」')
 T0 = 0.0; segs = []
 for i, s in enumerate(S, 1):
     sid, text = s['id'], s['t']; keep = Q[sid]['keep']
     tk = []
-    for t in json.load(open(f'cut/{sid}.json', errors='replace'))['transcription']:
+    for t in json.loads(Path(f'cut/{sid}.json').read_text(encoding='utf-8-sig'))['transcription']:
         a0, a1 = t['offsets']['from'] / 1000, t['offsets']['to'] / 1000; tx = t['text'].strip()
         if not tx or tx.startswith('['): continue
         for k, ch in enumerate(tx):
@@ -28,10 +28,15 @@ for i, s in enumerate(S, 1):
         if st[k] is None:
             lo = max([j for j in known if j < k], default=None); hi = min([j for j in known if j > k], default=None)
             st[k] = 0.0 if lo is None and hi is None else (st[hi] if lo is None else (st[lo] + 0.18 * (k - lo) if hi is None else st[lo] + (st[hi] - st[lo]) * (k - lo) / (hi - lo)))
+    # Clamp interpolated misses and make character times monotone within the cut.
+    previous = 0.0
+    for k in range(len(st)):
+        st[k] = max(previous, min(float(st[k]), max(0, keep - 1/30)))
+        previous = st[k]
     cov = sum(bl.size for bl in sm.get_matching_blocks()) / max(1, len(A))
     segs.append(dict(i=i, id=sid, start=round(T0, 3), end=round(T0 + keep, 3), text=text, chars={str(j): round(T0 + st[k], 3) for k, (j, _) in enumerate(clean)}))
     print(f'{i:2d} {sid:5s} 对齐 {cov:.0%}  {T0:.2f}–{T0 + keep:.2f}')
     T0 += keep
 Path(out).parent.mkdir(parents=True, exist_ok=True)
-json.dump(dict(total=round(T0, 3), segs=segs), open(out, 'w'), ensure_ascii=False, indent=0)
+Path(out).write_text(json.dumps(dict(total=round(T0, 3), segs=segs), ensure_ascii=False, indent=0), encoding='utf-8')
 print('total', round(T0, 2), '→', out)

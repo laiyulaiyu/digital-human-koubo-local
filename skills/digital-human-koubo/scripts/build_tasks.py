@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
-"""口播稿 → Grok 分段任务（create_tasks 的 tasks 数组）+ 费用估算。
+"""口播稿 → 本地 H3 清单（默认）或原 Grok 任务（--backend renoise）。
+
+本地：python -X utf8 build_tasks.py script.json tasks.json --config config/local.json
+本地字段/续跑见 references/local-comfyui.md。以下原 Grok 规则仅用于显式云端分支。
 
 用法：
   python3 build_tasks.py script.json out_tasks.json [--purpose "teaching a beginner tutorial step by step"] [--all-720p]
@@ -16,16 +19,24 @@ import json, math, re, sys
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent.parent
-P = json.loads((HERE / "persona.json").read_text())
+P = json.loads((HERE / "persona.json").read_text(encoding="utf-8-sig"))
 
 def arg(name, default=None):
     return sys.argv[sys.argv.index(name) + 1] if name in sys.argv else default
 
 def main():
+    if len(sys.argv) < 3:
+        sys.exit(__doc__)
+    if arg('--backend', 'comfyui') == 'comfyui':
+        from local_backend import build_manifest
+        build_manifest(sys.argv[1], sys.argv[2], arg('--config'), arg('--purpose', 'explaining clearly'))
+        return
+    if arg('--backend', 'comfyui') != 'renoise':
+        sys.exit('--backend must be comfyui or renoise')
     src, dst = sys.argv[1], sys.argv[2]
     purpose = arg("--purpose", "explaining clearly")
     all720 = "--all-720p" in sys.argv
-    S = json.loads(Path(src).read_text())
+    S = json.loads(Path(src).read_text(encoding="utf-8-sig"))
     tasks, total = [], 0
     for s in S:
         lang = s.get("lang", "Mandarin Chinese")
@@ -51,7 +62,7 @@ def main():
         tasks.append({"model": P["model"]["name"], "kind": "video", "ratio": ratio, "resolution": res, "duration": d,
                       "label": f"口播 {s['id']}", "idempotencyKey": f"dh-{Path(src).stem}-{s['id']}-v1",
                       "references": [{"ref": ref, "role": "reference_image"}], "prompt": prompt})
-    Path(dst).write_text(json.dumps(tasks, ensure_ascii=False, indent=1))
+    Path(dst).write_text(json.dumps(tasks, ensure_ascii=False, indent=1), encoding="utf-8")
     secs = sum(t["duration"] for t in tasks)
     print(f"{len(tasks)} 段 · 口播约 {secs} 秒 · 预估 {total} credits · 分 {math.ceil(len(tasks) / 10)} 批提交")
 

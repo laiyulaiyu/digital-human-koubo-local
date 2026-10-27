@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""多段 Grok 原声统一音色和空间感（第二、三期实测：齿音段间差 13.2 → 5.9 dB）。
+"""多段生成原声（本地 H3 / 原 Grok）统一频谱和空间感；不保证不同段声纹相同。
 1) 频谱匹配：每段 1/3 倍频程能量向「参照组」中位数靠拢（±4 dB，平滑后用 firequalizer）
 2) 去刺耳：去齿音 + 6.6 kHz / 3.6 kHz 轻收 + 200 Hz 轻补 + 轻压缩
 3) 同一个小房间混响：原本混响尾巴长的段少加，干的段多加
@@ -29,6 +29,8 @@ def band_db(x):
         seg = x[i:i + n]
         if np.sqrt(np.mean(seg ** 2)) < 0.01: continue
         s = np.abs(np.fft.rfft(seg * win)) ** 2; acc = s if acc is None else acc + s; k += 1
+    if acc is None:
+        raise ValueError('No usable speech energy; inspect the original audio before voice processing')
     f = np.fft.rfftfreq(n, 1 / SR); s = acc / max(1, k)
     out = np.array([10 * np.log10(np.sum(s[(f >= c / 2 ** (1 / 6)) & (f < c * 2 ** (1 / 6))]) + 1e-12) for c in CENTERS])
     return out - out.mean()
@@ -56,7 +58,10 @@ def room_ir():
     return ir + tail
 IR = room_ir()
 def roomify(dry, wet):
-    w = np.stack([np.convolve(dry, IR[:, c])[: len(dry)] for c in range(2)], 1)
+    # Same linear convolution, using FFT instead of O(samples * IR) on long clips.
+    nfft = 1 << (len(dry) + len(IR) - 2).bit_length()
+    spectrum = np.fft.rfft(dry, nfft)
+    w = np.stack([np.fft.irfft(spectrum * np.fft.rfft(IR[:, c], nfft), nfft)[: len(dry)] for c in range(2)], 1)
     return np.stack([dry, dry], 1) * (1 - wet) + w * wet
 def fq(g):
     g = np.convolve(np.pad(g, 1, mode="edge"), [0.25, 0.5, 0.25], mode="valid")

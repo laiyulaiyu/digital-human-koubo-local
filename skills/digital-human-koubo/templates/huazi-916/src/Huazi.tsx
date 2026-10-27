@@ -11,7 +11,7 @@ import { PackLayer, type PackItem } from "./kit/registry";
 const FPS = 30;
 const F = (s: number) => Math.round(s * FPS);
 const clamp = { extrapolateLeft: "clamp", extrapolateRight: "clamp" } as const;
-const ZH = '"PingFang SC","Hiragino Sans GB",sans-serif';
+const ZH = '"Microsoft YaHei","PingFang SC","Hiragino Sans GB",sans-serif';
 const EN = '"Avenir Next","Helvetica Neue",Arial,sans-serif';
 const COLORS: Record<string, string> = { yellow: "#FFE14D", pink: "#FF5A8A", cyan: "#3EE6FF", red: "#FF4D4F", green: "#38E08C", orange: "#FF7A1A", purple: "#A78BFA", white: "#FFFFFF" };
 const col = (c?: string, d = "yellow") => COLORS[c ?? d] ?? c ?? COLORS[d];

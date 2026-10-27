@@ -1,0 +1,16 @@
+{
+  "workspace": "../../../work",
+  "runner": "../scripts/local_media.py",
+  "comfy_root": "C:/ComfyUI",
+  "python": "C:/ComfyUI/python/python.exe",
+  "templates": "../workflows",
+  "url": "http://127.0.0.1:8191",
+  "observe_urls": ["http://127.0.0.1:8188", "http://127.0.0.1:8189", "http://127.0.0.1:8190"],
+  "image_steps": 40,
+  "startup_timeout": 300,
+  "job_timeout": 28800,
+  "poll_seconds": 3,
+  "max_idle_gpu_mib": 2500,
+  "ffmpeg": "ffmpeg",
+  "ffprobe": "ffprobe"
+}

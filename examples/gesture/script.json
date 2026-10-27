@@ -1,0 +1,20 @@
+[
+  {
+    "id": "g1",
+    "t": "先看来源，再看证据。想清楚，再下结论。",
+    "seconds": 6,
+    "first": "assets/presenter-medium.png",
+    "width": 448,
+    "height": 800,
+    "seed": 27511,
+    "turbo": false,
+    "keep_full": true,
+    "loras": [{"name": "better_motion_h3_lora_v1_500.safetensors", "strength": 0.5}],
+    "gestures": [
+      {"on": "先看来源", "action": "lifts her right forearm and opens her right palm upward at waist level, with a small shoulder weight shift"},
+      {"on": "再看证据", "action": "opens her left palm in a contrasting explanatory gesture while relaxing the right hand"},
+      {"on": "想清楚", "action": "briefly pauses her hands and gives one small thoughtful nod"},
+      {"on": "再下结论", "action": "makes one gentle downward beat with her right open palm on the stressed final words, then rests both hands naturally near the waist"}
+    ]
+  }
+]

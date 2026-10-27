@@ -4,7 +4,7 @@
 import json, re, sys
 from pathlib import Path
 d = Path(sys.argv[1] if len(sys.argv) > 1 else 'src')
-tl = json.load(open(d / 'tl.json')); ed = json.load(open(d / 'edit.json')); S = tl['segs']
+tl = json.loads((d / 'tl.json').read_text(encoding='utf-8-sig')); ed = json.loads((d / 'edit.json').read_text(encoding='utf-8-sig')); S = tl['segs']
 bad = []
 def T(r, where):
     if isinstance(r, (int, float)): return float(r)

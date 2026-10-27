@@ -9,7 +9,7 @@ export const clamp = { extrapolateLeft: "clamp", extrapolateRight: "clamp" } as 
 export const ease = { out: Easing.out(Easing.cubic), inOut: Easing.inOut(Easing.cubic), back: Easing.out(Easing.back(1.6)), expo: Easing.out(Easing.exp) };
 
 export const FONT = {
-  zh: '"PingFang SC","Hiragino Sans GB",sans-serif',
+  zh: '"Microsoft YaHei","PingFang SC","Hiragino Sans GB",sans-serif',
   en: '"Avenir Next","Helvetica Neue",Arial,sans-serif',
   intl: '"PingFang SC","Hiragino Sans","Apple SD Gothic Neo","Geeza Pro",sans-serif',
   mono: '"SF Mono",Menlo,monospace',

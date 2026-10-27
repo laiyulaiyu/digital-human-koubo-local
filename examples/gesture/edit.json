@@ -1,0 +1,17 @@
+{
+  "preset": "克制",
+  "title": {"left": "动作实验", "right": "节奏跟随口播"},
+  "badge": "内容由 AI 数字人演绎",
+  "brand": "cyan",
+  "tail": 0.5,
+  "chapters": [],
+  "keys": ["来源", "证据", "想清楚", "结论"],
+  "emojis": [],
+  "punch": [],
+  "cards": [],
+  "showcase": [],
+  "pack": [],
+  "voice": "voice.wav",
+  "video": "main.mp4",
+  "credits": "H3 人体动作 LoRA 0.5 · 原生人声 · 原仓库模板"
+}
