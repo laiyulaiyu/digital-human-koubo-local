@@ -350,6 +350,12 @@ export const Film: React.FC = () => {
           <Subs />
           {f < F(HOST_IN) && <FlashOpen />}
         </AbsoluteFill>
+        {/* The host is hidden during the flash opening, but its first clip's speech still plays. */}
+        {F(HOST_IN) > F(tl.segs[0].start) && (
+          <Sequence from={F(tl.segs[0].start)} durationInFrames={F(HOST_IN) - F(tl.segs[0].start)} layout="none">
+            <Audio src={staticFile(tl.segs[0].src)} />
+          </Sequence>
+        )}
         <Audio src={staticFile("music/bgm.mp3")} volume={(fr) => interpolate(fr, [0, 2, F(HOST_IN) - 2, F(HOST_IN) + 10, durationInFrames - 45, durationInFrames - 1], [0, 0.2, 0.2, 0.1, 0.1, 0], clamp)} />
         {ALL_CUES.map((c, i) => (
           <Sequence key={i} from={Math.max(0, c.at)} durationInFrames={F(3)} layout="none">
