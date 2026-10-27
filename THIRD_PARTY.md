@@ -1,5 +1,9 @@
 # Third-party components / 第三方组件
 
+Local release additions: the bundled local_media.py executor is adapted from the installed shuohao-local-media project; retained Apache-2.0 license and notice are in licenses/. Workflow JSONs are local configurations of native ComfyUI nodes, not model weights. The main upstream code and documentation retain their MIT license.
+
+MiniMax H3, Qwen Image, ASR and motion LoRA weights are not included and follow their model repositories' licenses. Download sources and the tested motion LoRA SHA256 are in docs/MODELS.md. New examples depict a locally generated fictional presenter. They are distinct from the upstream author's own avatar examples.
+
 | Component | Where | License | Notes |
 |---|---|---|---|
 | [Remotion](https://www.remotion.dev/) | npm dependency of every template | [Remotion License](https://www.remotion.dev/license) | Free for individuals and companies of up to 3 people; larger companies need a company license. 个人和 3 人以内公司免费，更大公司需购买授权。 |

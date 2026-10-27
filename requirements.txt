@@ -1,0 +1,5 @@
+numpy>=1.26,<3
+Pillow>=10,<13
+faster-whisper==1.2.1
+# PyAV19 removed metadata_errors used by faster-whisper 1.2.1.
+av==18.0.0

@@ -1,5 +1,7 @@
 # Notice / 说明
 
+本地化版本以 laiyulaiyu/digital-human-koubo-local 发布，基于 andyhuo520/digital-human-koubo 的 5fa9b19f52fb8920c83567468fa30e8391b8c503。保留原作者的版权与下面的形象使用说明。本版本 docs/media 和 examples/gesture/assets 的主播是另行生成的虚构测试人物，不是上游作者的形象。
+
 The MIT license (LICENSE) covers the code and documentation in this repository.
 The demo videos, presenter images (assets/avatar_ref.jpg, docs/*, style previews and
 the packaging gallery) depict the author's own AI digital humans and are provided for

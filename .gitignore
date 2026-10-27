@@ -8,3 +8,16 @@ __pycache__/
 public/main*.mp4
 public/voice*.wav
 bin/
+work/
+runtime/
+logs/
+.venv/
+dist/
+*.safetensors
+*.safetensors.part
+*.pt
+*.job.json
+**/config/local.json
+.env
+.env.*
+!**/local.example.json
